@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+scikit-learn
+joblib
+nltk
+numpy
+scipy
+google-api-python-client 
+pytz 
+pandas
+dotenv
+python-dotenv
+langdetect

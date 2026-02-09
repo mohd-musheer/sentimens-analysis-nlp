@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindPulse AI | Insightful Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --bg-deep: #0a0e27;
+            --glass: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f2ff;
+            --neon-magenta: #ff00e5;
+            --neon-lime: #bcff00;
+            --neon-gold: #ffcc00;
+        }
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #030712; /* Very deep navy base */
+    background-image: 
+        /* Deep Blue glow from top left */
+        radial-gradient(circle at 15% 25%, rgba(29, 78, 216, 0.15) 0%, transparent 45%),
+        /* Royal Purple glow from bottom right */
+        radial-gradient(circle at 85% 75%, rgba(126, 34, 206, 0.15) 0%, transparent 45%),
+        /* Central subtle Indigo wash */
+        radial-gradient(circle at 50% 50%, rgba(67, 56, 202, 0.05) 0%, transparent 70%),
+        /* Subtle diagonal dark flow */
+        linear-gradient(135deg, #030712 0%, #0b0f1a 100%);
+    color: #f8fafc;
+    min-height: 100vh;
+    background-attachment: fixed;
+}
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        .neon-border-hover:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            border-width: 1px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .tech-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 40, 80, 0.6) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .tech-card:hover {
+            border-color: rgba(0, 242, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.15), 0 0 40px rgba(255, 0, 229, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00f2ff 0%, #ff00e5 50%, #bcff00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .welcome-subtitle {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 16px rgba(255, 0, 229, 0.3)); }
+        }
+
+        .empty-state-container {
+            padding: 60px 20px;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col lg:flex-row justify-between items-center gap-8 mb-16">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-fuchsia-500">
+                    MINDPULSE <span class="font-light italic text-slate-500">AI</span>
+                </h1>
+                <p class="text-slate-400 text-sm mt-1 uppercase tracking-widest">Mental Health Intelligence Engine</p>
+            </div>
+
+            <div class="flex w-full lg:w-1/2 gap-3 p-2 glass-panel border-white/10">
+                <input type="text" id="urlField" placeholder="Paste YouTube link (e.g., https://youtube.com/watch?v=...)" 
+                    class="flex-1 bg-transparent border-none px-4 py-2 focus:ring-0 text-white placeholder-slate-500">
+                <button onclick="runAnalysis()" id="analyzeBtn" class="btn-gradient px-8 py-3 rounded-xl font-bold text-white uppercase text-xs tracking-widest">
+                    Scan Feed
+                </button>
+            </div>
+        </header>
+
+        <div id="loadingUI" class="hidden mb-12 text-center animate-pulse">
+            <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div id="loadProgress" class="h-full bg-cyan-500 transition-all duration-500" style="width: 10%;"></div>
+            </div>
+            <p class="mt-4 text-cyan-400 font-mono text-xs uppercase tracking-tighter">AI Inference in Progress...</p>
+        </div>
+
+        <!-- Welcome & Tech Stack Section -->
+        <div id="welcomeUI">
+            <div class="empty-state-container">
+                <h2 class="welcome-title">MINDPULSE AI</h2>
+                <p class="welcome-subtitle">Advanced Sentiment Analysis Engine for Mental Health Intelligence</p>
+                
+                <div class="mb-16">
+                    <p class="text-slate-400 mb-8 uppercase text-xs tracking-widest">Paste a YouTube link and let our AI analyze the community's emotional landscape</p>
+                    <div class="w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent rounded-full opacity-50"></div>
+                </div>
+
+                <!-- Tech Stack -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 mb-12 uppercase tracking-widest">Powered By</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- FastAPI -->
+                        <div class="tech-card">
+                            <div class="tech-icon">⚡</div>
+                            <h4 class="font-bold text-white mb-2">FastAPI</h4>
+                            <p class="text-xs text-slate-400">High-performance Python API framework with async support</p>
+                        </div>
+
+                        <!-- Docker -->
+                        <div class="tech-card">
+                            <div class="tech-icon">🐳</div>
+                            <h4 class="font-bold text-white mb-2">Docker</h4>
+                            <p class="text-xs text-slate-400">Containerized deployment for consistency and scalability</p>
+                        </div>
+
+                        <!-- TensorFlow/NLP -->
+                        <div class="tech-card">
+                            <div class="tech-icon">🧠</div>
+                            <h4 class="font-bold text-white mb-2">Deep Learning</h4>
+                            <p class="text-xs text-slate-400">Advanced NLP models for sentiment classification</p>
+                        </div>
+
+                        <!-- YouTube API -->
+                        <div class="tech-card">
+                            <div class="tech-icon">📺</div>
+                            <h4 class="font-bold text-white mb-2">YouTube API</h4>
+                            <p class="text-xs text-slate-400">Real-time comment extraction and analysis</p>
+                        </div>
+
+                        <!-- Python -->
+                        <div class="tech-card">
+                            <div class="tech-icon">🐍</div>
+                            <h4 class="font-bold text-white mb-2">Python</h4>
+                            <p class="text-xs text-slate-400">Robust backend processing and data pipeline</p>
+                        </div>
+
+                        <!-- Chart.js -->
+                        <div class="tech-card">
+                            <div class="tech-icon">📊</div>
+                            <h4 class="font-bold text-white mb-2">Chart.js</h4>
+                            <p class="text-xs text-slate-400">Real-time data visualization and analytics</p>
+                        </div>
+
+                        <!-- PostgreSQL -->
+                        <div class="tech-card">
+                            <div class="tech-icon">🗄️</div>
+                            <h4 class="font-bold text-white mb-2">Database</h4>
+                            <p class="text-xs text-slate-400">Persistent data storage and retrieval</p>
+                        </div>
+
+                        <!-- Cloud Deploy -->
+                        <div class="tech-card">
+                            <div class="tech-icon">☁️</div>
+                            <h4 class="font-bold text-white mb-2">Cloud Ready</h4>
+                            <p class="text-xs text-slate-400">Deploy anywhere with containerization</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardUI" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+                <div class="lg:col-span-4 glass-panel p-6 flex flex-col justify-between overflow-hidden relative">
+                    <img id="vidThumb" class="rounded-2xl w-full object-cover shadow-2xl z-10" src="" alt="Thumbnail">
+                    <div class="mt-6 z-10">
+                        <h2 id="vidTitle" class="text-xl font-bold line-clamp-2 mb-2"></h2>
+                        <span id="commentCount" class="text-[10px] bg-white/5 border border-white/10 px-3 py-1 rounded-full text-slate-400"></span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 glass-panel p-6 flex flex-col items-center">
+                    <h3 class="text-xs font-bold text-slate-500 mb-8 uppercase tracking-widest">Sentiment Distribution</h3>
+                    <div class="w-full max-w-[220px]">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 grid grid-cols-2 gap-4" id="statsGrid">
+                    </div>
+            </div>
+
+            <div class="glass-panel overflow-hidden">
+                <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                    <h3 class="font-bold text-lg tracking-tight">Real-Time Commentary Analysis</h3>
+                    <span class="text-[10px] text-cyan-500 font-mono">EN-US // 0.55 CONF_LVL</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] text-slate-500 uppercase tracking-widest border-b border-white/5">
+                                <th class="px-8 py-5">Verified Comment</th>
+                                <th class="px-8 py-5 text-center">AI Result</th>
+                                <th class="px-8 py-5 text-right">Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commentFeed" class="divide-y divide-white/5">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myChart = null;
+        
+        // ATTRACTIVE NEON PALETTE
+        const palette = {
+            "Anxiety": { color: "#FF9100", bg: "rgba(255, 145, 0, 0.1)" },
+            "Bipolar": { color: "#D500F9", bg: "rgba(213, 0, 249, 0.1)" },
+            "Depression": { color: "#2979FF", bg: "rgba(41, 121, 255, 0.1)" },
+            "Normal": { color: "#00E676", bg: "rgba(0, 230, 118, 0.1)" },
+            "Personality_disorder": { color: "#FF1744", bg: "rgba(255, 23, 68, 0.1)" },
+            "Stress": { color: "#FFFF00", bg: "rgba(255, 255, 0, 0.1)" },
+            "Suicidal": { color: "#1A237E", bg: "rgba(26, 35, 126, 0.1)" }
+        };
+
+        async function runAnalysis() {
+            const url = document.getElementById('urlField').value;
+            if(!url) return;
+
+            // UI Transitions
+            document.getElementById('welcomeUI').classList.add('hidden');
+            document.getElementById('loadingUI').classList.remove('hidden');
+            document.getElementById('loadProgress').style.width = "40%";
+            document.getElementById('dashboardUI').classList.add('hidden');
+
+            try {
+                const response = await fetch(`/analyze?youtube_url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                
+                if(data.error) throw new Error(data.error);
+
+                document.getElementById('loadProgress').style.width = "100%";
+                setTimeout(() => {
+                    document.getElementById('loadingUI').classList.add('hidden');
+                    updateDashboard(data);
+                }, 600);
+
+            } catch (err) {
+                alert("Error: " + err.message);
+                document.getElementById('loadingUI').classList.add('hidden');
+            }
+        }
+
+        function updateDashboard(data) {
+            document.getElementById('dashboardUI').classList.remove('hidden');
+            document.getElementById('welcomeUI').classList.add('hidden');
+
+            // Metadata
+            document.getElementById('vidTitle').innerText = data.video.title;
+            document.getElementById('vidThumb').src = data.video.thumbnail;
+            document.getElementById('commentCount').innerText = `${data.video.total_comments} Comments Analyzed`;
+
+            // Stat Cards
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+            Object.entries(data.community_profile).forEach(([label, pct]) => {
+                const card = document.createElement('div');
+                card.className = "glass-panel p-4 neon-border-hover transition-all duration-300 group";
+                card.innerHTML = `
+                    <p class="text-[9px] text-slate-500 uppercase font-bold mb-1 tracking-widest">${label.replace('_',' ')}</p>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-xl font-bold group-hover:scale-110 transition-transform" style="color: ${palette[label].color}">${pct}%</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Comment Table
+            const feed = document.getElementById('commentFeed');
+            feed.innerHTML = '';
+            data.recent_comments.forEach(c => {
+                const row = document.createElement('tr');
+                row.className = "group hover:bg-white/[0.02] transition-colors";
+                
+                const style = palette[c.label];
+                row.innerHTML = `
+                    <td class="px-8 py-5 text-sm text-slate-300 max-w-lg leading-relaxed">${c.text}</td>
+                    <td class="px-8 py-5 text-center">
+                        <span class="status-pill" style="background: ${style.bg}; color: ${style.color}; border-color: ${style.color}44">
+                            ${c.label.replace('_',' ')}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-right font-mono text-xs ${c.confidence > 0.8 ? 'text-lime-400' : 'text-slate-500'}">
+                        ${(c.confidence * 100).toFixed(0)}%
+                    </td>
+                `;
+                feed.appendChild(row);
+            });
+
+            renderChart(data.community_profile);
+        }
+
+        function renderChart(metrics) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            const labels = Object.keys(metrics);
+            const values = Object.values(metrics);
+            const colors = labels.map(l => palette[l].color);
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        hoverOffset: 20,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '82%',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: { animateScale: true }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
